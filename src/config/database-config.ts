@@ -1,20 +1,19 @@
-import BaseEntity from 'src/entity/base.entity';
 import UserEntity from 'src/entity/user.entity';
 import { DataSourceOptions } from 'typeorm';
 
 const databaseConfig: DataSourceOptions = {
-  name: 'default',
-  username: 'postgres',
   type: 'postgres',
+  host: 'localhost',
   port: 5432,
-  database: 'usersdb',
+  username: 'postgres',
   password: 'password',
-  entities: [BaseEntity, UserEntity],
+  database: 'usersdb',
+  entities: [UserEntity],
   migrations: [
-    __dirname + '/migration/**/*.ts',
-    __dirname + '/migration/**/*.js',
+    __dirname + '/migrations/**/*.ts',
+    __dirname + '/migrations/**/*.js',
   ],
-  synchronize: false,
+  synchronize: true,
   logging: true,
   migrationsRun: true,
 };
