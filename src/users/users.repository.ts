@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import UsersDto from './users.dto';
 
 export type UserType = {
-  userId: number;
+  userId: string;
   fullname: string;
   email: string;
 };
@@ -38,10 +38,10 @@ export default class UsersRepository {
     /** New user id to be inserted */
     const newId =
       (this.users.length
-        ? Math.max(...this.users.map((user) => user.userId))
+        ? Math.max(...this.users.map((user) => parseInt(user.userId)))
         : 0) + 1;
 
-    const userToBeInserted = { ...userDto, userId: newId };
+    const userToBeInserted = { ...userDto, userId: newId.toString() };
 
     this.users.push(userToBeInserted);
 

@@ -1,4 +1,4 @@
-import UserEntity from 'src/entity/user.entity';
+import UserEntity from '../entity/user.entity';
 import { DataSourceOptions } from 'typeorm';
 
 const databaseConfig: DataSourceOptions = {

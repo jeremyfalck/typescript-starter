@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import UserEntity from '../entity/user.entity';
 import UsersDto from './users.dto';
-import UsersRepository from './users.repository';
+import { UserMapper } from '../mapper/user.mapper';
 
 type UserType = import('./users.repository').UserType;
 export type UsersResponse = { users: UserType[] };
@@ -8,75 +10,84 @@ export type UserResponse = { users: UserType };
 
 @Injectable()
 export default class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @Inject('USER_REPOSITORY')
+    private userRepository: Repository<UserEntity>,
+  ) {}
+
+  userMapper = new UserMapper();
 
   /**
    * Get all users
    */
-  public getAllUsers(): UsersResponse {
-    const users = this.usersRepository.getAllUsers();
-
-    return {
-      users,
-    };
+  public getAllUsers(): Promise<UsersDto[]> {
+    return this.userRepository.find();
   }
 
-  /**
-   * Get one user by it's id
-   */
-  public getOneUser(userId: UserType['userId']): UserResponse {
-    const user = this.usersRepository.getOneUser(userId);
-
-    if (!user) {
-      throw new NotFoundException('User was not found');
-    }
-
-    return {
-      users: user,
-    };
+  public insertUser(user: UsersDto): Promise<UsersDto> {
+    return this.userRepository.save(this.userMapper.mapToEntity(user));
   }
 
-  /**
-   * Create a new user with data
-   */
-  public createUser(userDto: UsersDto): UserResponse {
-    const user = this.usersRepository.createUser(userDto);
-
-    return {
-      users: user,
-    };
+  public getUserById(userId: string): Promise<UserEntity> {
+    return this.userRepository.findOne({ where: { id: userId } });
   }
 
-  /**
-   * Update a user with it's id and data
-   */
-  public updateUser(
-    userId: UserType['userId'],
-    userDto: UsersDto,
-  ): UserResponse {
-    const user = this.usersRepository.updateUser(userId, userDto);
+  // /**
+  //  * Get one user by it's id
+  //  */
+  // public getOneUser(userId: UserType['userId']): UserResponse {
+  //   const user = this.usersRepository.getOneUser(userId);
 
-    if (!user) {
-      throw new NotFoundException('User was not found');
-    }
+  //   if (!user) {
+  //     throw new NotFoundException('User was not found');
+  //   }
 
-    return {
-      users: user,
-    };
-  }
+  //   return {
+  //     users: user,
+  //   };
+  // }
 
-  /**
-   * Delete a user with it's id
-   */
-  public deleteUser(userId: UserType['userId']): UserResponse {
-    const user = this.usersRepository.deleteUser(userId);
+  // /**
+  //  * Create a new user with data
+  //  */
+  // public createUser(userDto: UsersDto): UserResponse {
+  //   const user = this.usersRepository.createUser(userDto);
 
-    if (!user) {
-      throw new NotFoundException('User was not found');
-    }
+  //   return {
+  //     users: user,
+  //   };
+  // }
 
-    return {
-      users: user,
-    };
-  }
+  // /**
+  //  * Update a user with it's id and data
+  //  */
+  // public updateUser(
+  //   userId: UserType['userId'],
+  //   userDto: UsersDto,
+  // ): UserResponse {
+  //   const user = this.usersRepository.updateUser(userId, userDto);
+
+  //   if (!user) {
+  //     throw new NotFoundException('User was not found');
+  //   }
+
+  //   return {
+  //     users: user,
+  //   };
+  // }
+
+  // /**
+  //  * Delete a user with it's id
+  //  */
+  // public deleteUser(userId: UserType['userId']): UserResponse {
+  //   const user = this.usersRepository.deleteUser(userId);
+
+  //   if (!user) {
+  //     throw new NotFoundException('User was not found');
+  //   }
+
+  //   return {
+  //     users: user,
+  //   };
+  // }
 }
